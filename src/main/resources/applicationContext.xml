@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+	   http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 加载配置文件 -->
+    <!-- 将多个配置文件读取到容器中，交给Spring管理 -->
+    <!-- web 中，先于 mybaties 读取，交给了 Spring。然后在设置 myabties 的文件里面就可以直接使用了，不需要再次导入 -->
+    <bean
+        id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 自动扫描 -->
+    <!-- Service包注入。--> 
+    <!-- Controller 在 SpringMVC 中扫描注入 -->
+    <!-- Dao 在 mybaties 中扫描注入-->
+    <!-- 如果在这里只注入 Service 的话，由于没有注入 Dao 的内容会报错。 -->
+    <!-- 要么不注入，要么全注入。  这份代码在 springMVC-servlet 里面注入 -->
+    <!-- <context:component-scan base-package="com.LJK.service" /> -->
+</beans>

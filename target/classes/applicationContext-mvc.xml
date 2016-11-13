@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 命名空间 如果不添加的话 下面的组件会添加失败 找不到对应的标签 -->
+<!-- 注意里面的 AOP -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/mvc 
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       default-lazy-init="true">
+       
+    <!-- 用来扫描指定的路径下的所有包，来加载组件用 -->   
+    <!-- <context:component-scan base-package="com.LJK"/> -->
+    
+    <!-- 指定静态资源路径  -->
+    <!-- 在SpringMVC 返回页面的时候，就在这个路径底下来找 -->
+    <mvc:resources location="/WEB-INF" mapping="/**"/>
+    
+    <!-- 默认的注解映射的支持 -->
+    <!-- 添加这个才会开启注解 -->
+    <!-- <mvc:annotation-driven/> -->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/plain;charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                        <value>application/x-www-form-urlencoded</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    
+	<!-- 启用AspectJ自动代理 -->
+	<!-- 添加这个才会启动 AOP -->
+    <aop:aspectj-autoproxy/>
+    
+	<!-- ViewResoler视图解析器 -->
+    <!-- 当返回页面的时候  会实际指向这里的东西 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+</beans>

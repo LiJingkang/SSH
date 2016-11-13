@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.LJK.dao.UserDao_2" >
+
+  <select id="selectByPrimaryKey" resultType="com.LJK.entity.User_2" >
+    select `id` ,`name` ,`pwd` from user where  `id` = #{id}
+  </select>
+
+  <insert id="insert" parameterType="com.LJK.entity.User_2" useGeneratedKeys="true" >
+    insert into user (`id` ,`name` ,`pwd` ) values (#{id},#{name},#{pwd})
+  </insert>
+
+  <delete id="deleteByPrimaryKey">
+    delete from user where  `id` = #{id}
+  </delete>
+
+</mapper>

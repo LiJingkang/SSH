@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 也常用 applicationContext-mvc -->
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans    
+                            http://www.springframework.org/schema/beans/spring-beans.xsd    
+                            http://www.springframework.org/schema/context    
+                            http://www.springframework.org/schema/context/spring-context.xsd    
+                            http://www.springframework.org/schema/tx 
+                            http://www.springframework.org/schema/tx/spring-tx-4.3.xsd                            
+                            http://www.springframework.org/schema/mvc    
+                            http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+                            
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- 自动扫描，自动注入，配置数据源 -->
+    
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="com.LJK" />
+    
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 自动注入 -->
+    <!-- 配置 MyBatis session 工厂 -->
+    <!-- 使用到了mybatis-spring Spring和MyBatis完美整合，不需要 mybatis 配置 -->
+    
+    <!-- 映射XML文件(.xml) -->     <!-- 手动配置XML文件的路径 -->
+    <bean
+        id="sqlSessionFactory"
+        class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property
+            name="dataSource"
+            ref="dataSource" />
+        <!-- 自动扫描 mapping.xml 文件 -->
+        <!-- 当mybatis的xml文件和mapper接口不在相同包下时，需要用mapperLocations属性指定xml文件的路径。 *是个通配符，代表所有的文件，**代表所有目录下 -->
+        <property
+            name="mapperLocations"
+            value="classpath:com/LJK/mapping/*.xml"></property>
+    </bean>
+
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <!-- 扫描mybatis映射接口类 一般是DAO包 -->
+    <!-- 映射接口类文件(.java) -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property
+            name="basePackage"
+            value="com.LJK.dao" />
+        <property
+            name="sqlSessionFactoryBeanName"
+            value="sqlSessionFactory"></property>
+    </bean>
+
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- 配置数据源 -->
+    <bean
+        id="dataSource"
+        class="com.alibaba.druid.pool.DruidDataSource"
+        init-method="init"
+        destroy-method="close">  <!-- 使用哪种 class 就一定要在 maven 中有 -->
+                                 <!-- org.apache.commons.dbcp.BasicDataSource -->
+        <property
+            name="driverClassName"
+            value="${mysql.driver}" />
+        <property
+            name="url"
+            value="${mysql.url}" />
+        <property
+            name="username"
+            value="${mysql.username}" />
+        <property
+            name="password"
+            value="${mysql.password}" />
+        <!-- 初始化连接大小 -->
+        <property
+            name="initialSize"
+            value="${mysql.initialSize}"></property>
+        <!-- 连接池最大连接数量 -->
+        <property
+            name="maxActive"
+            value="${mysql.maxActive}"></property>
+        <!-- 连接池最大空闲 -->
+        <property
+            name="maxIdle"
+            value="${mysql.maxIdle}"></property>
+        <!-- 连接池最小空闲 -->
+        <property
+            name="minIdle"
+            value="${mysql.minIdle}"></property>
+        <!-- 获取连接最大等待时间 -->
+        <property
+            name="maxWait"
+            value="${mysql.maxWait}"></property>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property
+            name="timeBetweenEvictionRunsMillis"
+            value="60000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property
+            name="minEvictableIdleTimeMillis"
+            value="25200000" />
+
+        <!-- 打开 removeAbandoned 功能 -->
+        <property
+            name="removeAbandoned"
+            value="true" />
+        <!-- 1800秒，也就是30分钟 -->
+        <property
+            name="removeAbandonedTimeout"
+            value="1800" />
+        <!-- 关闭 abanded 连接时输出错误日志 -->
+        <property
+            name="logAbandoned"
+            value="true" />
+
+        <!-- 监控数据库 -->
+        <property
+            name="filters"
+            value="mergeStat" />
+    </bean>
+    
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 基于注解的事务管理 -->
+    <!-- 主要提供数据库异常时候的 回滚保护等操作 -->
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean
+        id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property
+            name="dataSource"
+            ref="dataSource" />
+    </bean>
+
+    <!-- 第一种方式: 注解方式配置事物 -->
+    <!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+
+    <!-- 第二种方式: 拦截器方式配置事物 -->
+    <tx:advice
+        id="transactionAdvice"
+        transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" />
+            <tx:method name="save*" />
+            <tx:method name="update*" />
+            <tx:method name="modify*" />
+            <tx:method name="edit*" />
+            <tx:method name="delete*" />
+            <tx:method name="remove*" />
+            <tx:method name="repair" />
+            <tx:method name="deleteAndRepair" />
+
+            <tx:method
+                name="get*"
+                propagation="SUPPORTS" />
+            <tx:method
+                name="find*"
+                propagation="SUPPORTS" />
+            <tx:method
+                name="load*"
+                propagation="SUPPORTS" />
+            <tx:method
+                name="search*"
+                propagation="SUPPORTS" />
+            <tx:method
+                name="datagrid*"
+                propagation="SUPPORTS" />
+            <tx:method
+                name="*"
+                propagation="SUPPORTS" />
+        </tx:attributes>
+    </tx:advice>
+</beans>  

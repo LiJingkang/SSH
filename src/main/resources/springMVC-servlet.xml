@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 也常用 applicationContext-mvc -->
+<!-- 命名空间 如果不添加的话 下面的组件会添加失败 找不到对应的标签 -->
+<!-- 注意里面的 AOP -->
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/mvc 
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+    default-lazy-init="true">
+
+    <!-- 主要做的工作：自动扫描控制器，视图模式，注解的启动 -->
+    
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 自动扫描控制器 -->
+    <!-- 注解扫描包 以完成 bean 创建和自动依赖注入的功能 -->
+    <!-- 自动扫描该包 扫描了下面所有  包括所有注解 -->
+	<!-- 这个注解是 SpringMVC 扫描 @Controller 和 mybatis 中的注入不同 如果不添加，将没有@Controller-->
+    <context:component-scan base-package="com.LJK" /> <!-- 简写形式 -->
+
+    <!-- <context:component-scan base-package="com.zsx.web.*"> springMVC配置文件中将Service注解给去掉 
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" 
+        /> <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" 
+        /> <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" 
+        /> </context:component-scan> -->
+
+    <!-- <context:component-scan /> -->
+    <!-- 扫描指定的包中的类上的注解，常用的注解有： -->
+    <!-- @Controller 声明Action组件 -->
+    <!-- @Service 声明Service组件 @Service("xxxService") -->
+    <!-- @Repository 声明Dao组件 -->
+    <!-- @Component 泛指组件, 当不好归类时. -->
+    <!-- @RequestMapping("/menu") 请求映射 -->
+    <!-- @Resource 用于注入，( j2ee提供的 ) 默认按名称装配，@Resource(name="beanName") -->
+    <!-- @Autowired 用于注入，(spring提供的) 默认按类型装配 -->
+    <!-- @Transactional( rollbackFor={Exception.class}) 事务管理 -->
+    <!-- @ResponseBody将内容或对象作为 HTTP 响应正文返回，并调用适合HttpMessageConverter的Adapter转换对象，写入输出流 -->
+    <!-- @Scope("prototype") 设定bean的作用域 -->
+
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- 注解的启动 -->
+    <!-- 启用 spring mvc 注解 -->
+    <!-- Spring 容器注册
+         AutowiredAnnotationBeanPostProcessor、
+         CommonAnnotationBeanPostProcessor、
+         PersistenceAnnotationBeanPostProcessor 以及 
+         RequiredAnnotationBeanPostProcessor 这 4 个BeanPostProcessor。
+              注册这4个 BeanPostProcessor的作用，就是为了你的系统能够识别相应的注解。  -->
+              
+    <!-- 不过，我们使用注解一般都会配置扫描包路径选项
+         <context:component-scan base-package=”XX.XX”/> 
+               该配置项其实也包含了自动注入上述processor的功能，
+               因此当使用 <context:component-scan/> 后，
+               就可以将 <context:annotation-config/> 移除了。  -->              
+    <!-- <context:annotation-config /> -->
+    
+    
+    <!-- 开启注解方案1 -->
+    <!-- 注解方法处理 -->
+    <!-- <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" 
+        /> -->
+    <!-- 注解类映射处理 -->
+    <!-- <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" 
+        /> -->
+
+    <!-- 开启注解 方案2 -->
+    <mvc:annotation-driven />
+    
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- AOP -->
+    <!-- 启用 AspectJ 自动代理 -->  
+    <!-- 启用之后，在JAVA代码中设置就可以了。 否则就在下面使用XML配置 -->  
+    <aop:aspectj-autoproxy />
+    
+    <!-- 使用 XML 配置方士来实现 -->
+    <!-- 使用 XML 来声明切面-->
+    <!-- 创建 LogAspect 类 -->
+    <!-- 第一个 * —— 通配 任意返回值类型 -->
+    <!-- 第二个 * —— 通配 包com.evan.crm.service下的任意class -->
+    <!-- 第三个 * —— 通配包com.evan.crm.service下的任意class的任意方法 -->
+    <!-- 第四个 .. —— 通配 方法可以有0个或多个参数 -->
+    <!-- <bean id="logAspect" class="com.LJK.LogAspect" />
+    <aop:config>
+        <aop:aspect id="log"  ref="logAspect">
+            <aop:pointcut id="logAop" expression="execution(* com.tengj.demo.service.impl.UserServiceImpl.sayHello(..)) and args(name)"/>
+            <aop:before method="logBefore" pointcut-ref="logAop"/>
+            <aop:after method="logAfter"  pointcut-ref="logAop"/>
+            <aop:after-returning method="logAfterReturning"  pointcut-ref="logAop"/>
+            <aop:after-throwing method="logAfterThrow" pointcut-ref="logAop"/>
+            
+            <aop:around method="logAfterThrow"  pointcut-ref="logAop"/>
+        </aop:aspect>
+    </aop:config> -->
+    
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 静态资源 --> 
+    <!-- 访问，方案1 -->
+    <!-- 指定静态资源路径 -->
+    <!-- 在 SpringMVC 返回页面的时候，就在这个路径底下来找 -->
+    <!--<mvc:resources mapping="/static/**" location="/static/" /> <mvc:resources 
+        mapping="/images/**" location="/WEB-INF/images/" /> <mvc:resources mapping="/css/**" 
+        location="/WEB-INF/css/" /> <mvc:resources mapping="/js/**" location="/WEB-INF/js/" 
+        /> <mvc:resources location="/WEB-INF" mapping="/**" /> -->
+
+    <!-- 静态资源访问，方案2 -->
+    <!--  (表示不对静态资源如CSS、JS、HTML等进行拦截)  -->
+    <mvc:default-servlet-handler />
+
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- ViewResoler 视图解析类 -->
+    <!-- 定义跳转的文件的前后缀 ，视图模式配置 -->
+    <!-- 当返回页面的时候 会实际指向这里的东西 -->
+    <bean
+        id="viewResolver"
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 -->
+        <property
+            name="prefix"
+            value="/WEB-INF/" />
+        <!--可为空,方便实现自已的依据扩展名来选择视图解释类的逻辑 -->
+        <property
+            name="suffix"
+            value=".jsp" />
+    </bean>
+
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- Spring MVC JSON 配置 -->
+    <!-- 如果使用不同的 Json 包，在 class 里面修改就可以了 -->
+    <bean
+        class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean
+                    class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+                <!--避免IE执行AJAX时，返回JSON出现下载文件 -->
+                <bean
+                    class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>application/json;charset=UTF-8</value>
+                            <value>application/x-www-form-urlencoded</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ———————————————————————————————————————————————— -->
+    
+    <!-- 配置文件上传 -->
+    <bean
+        id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 默认编码 -->
+        <property
+            name="defaultEncoding"
+            value="utf-8" />
+        <!-- 文件大小最大值 -->
+        <!-- 100M 1024 * 1024 * 100 -->
+        <property
+            name="maxUploadSize"
+            value="10485760000" />
+        <!-- 内存中的最大值 -->
+        <property
+            name="maxInMemorySize"
+            value="40960" />
+    </bean>
+
+    <!-- ———————————————————————————————————————————————— -->
+
+    <!-- 拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <!-- 自己的拦截器所在的位置 -->
+            <bean class="com.LJK.common.interceptors.AuthInterceptor"> <!-- 必须要有，不然会在启动的时候报错 -->
+                <!-- 不需要权限验证的地址 -->
+                <property name="excludeUrls">
+                    <list>
+                        <value>wechat</value>  <!-- 登录页面 -->
+                        <value>checkname</value>  <!-- 注册时检查用户名是否重复 -->
+                        <value>register</value>  <!-- 注册页面 -->
+                        <value>login</value>  <!-- 登录操作 -->
+                        <value>logout</value>  <!-- 登出操作 -->
+                        <value>validatecode</value>  <!-- 生成验证码 -->
+                        <value>user/getUserList</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
