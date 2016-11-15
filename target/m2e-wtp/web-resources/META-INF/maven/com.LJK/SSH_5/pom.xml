@@ -1,7 +1,8 @@
 <project
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+        http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.LJK</groupId>
     <artifactId>SSH_5</artifactId>
@@ -55,7 +56,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-    </repositories>
+    
+        <!-- Repository for ORACLE ojdbc. -->
+        <!--  Oracle  -->
+           <repository>
+                <id>codelds</id>
+                <url>https://code.lds.org/nexus/content/groups/main-repo</url>
+            </repository>
+        </repositories>    
 
 
     <!-- 包 -->
@@ -154,6 +162,7 @@
         
                 
         <!-- 数据库相关 -->
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
         <!-- mybatis 核心包 -->
         <dependency>
             <groupId>org.mybatis</groupId>

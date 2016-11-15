@@ -40,6 +40,7 @@
     <!-- ———————————————————————————————————————————————— -->
     
     <!-- SpringMVC 核心配置 -->
+    <!-- 配置Spring MVC DispatcherServlet -->
     <!-- DispatcherServlet 是整个 Spring MVC 的核心 -->
     <servlet>
         <servlet-name>SSH_5</servlet-name> <!-- 拦截器的名字 任意 一般使用项目名称 -->
